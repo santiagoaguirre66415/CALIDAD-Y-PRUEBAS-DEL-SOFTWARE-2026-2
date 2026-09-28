@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bitácora de Mantenimiento Vehicular</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #1b1e22;
+    --panel: #24282e;
+    --panel-2: #2b3038;
+    --text: #e8e6e1;
+    --muted: #9aa0a6;
+    --accent: #e2622a;
+    --accent-dim: #7a3a1f;
+    --danger: #d64545;
+    --success: #4caf7d;
+    --warning: #e2b32a;
+    --border: #363c43;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter', sans-serif;
+    min-height:100vh;
+  }
+  header{
+    padding:28px 32px 20px;
+    border-bottom:1px solid var(--border);
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    flex-wrap:wrap;
+    gap:16px;
+  }
+  header h1{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:1.6rem;
+    margin:0;
+    letter-spacing:-0.01em;
+  }
+  header p{
+    margin:4px 0 0;
+    color:var(--muted);
+    font-size:0.9rem;
+    max-width:46ch;
+  }
+  .dash{
+    display:flex;
+    gap:22px;
+  }
+  .dash-item{
+    text-align:right;
+  }
+  .dash-item .num{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:1.8rem;
+    font-weight:600;
+    line-height:1;
+  }
+  .dash-item .lbl{
+    color:var(--muted);
+    font-size:0.75rem;
+    margin-top:4px;
+  }
+  .dash-item.urgent .num{ color:var(--danger); }
+
+  main{
+    display:grid;
+    grid-template-columns:340px 1fr;
+    gap:0;
+    min-height:calc(100vh - 96px);
+  }
+  @media (max-width: 860px){
+    main{grid-template-columns:1fr;}
+  }
+
+  .form-panel{
+    padding:28px;
+    border-right:1px solid var(--border);
+    background:var(--panel);
+  }
+  .form-panel h2{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:1rem;
+    margin:0 0 18px;
+    color:var(--accent);
+  }
+  label{
+    display:block;
+    font-size:0.8rem;
+    color:var(--muted);
+    margin:14px 0 6px;
+  }
+  input, select, textarea{
+    width:100%;
+    background:var(--panel-2);
+    border:1px solid var(--border);
+    color:var(--text);
+    padding:10px 12px;
+    border-radius:4px;
+    font-family:'Inter', sans-serif;
+    font-size:0.9rem;
+  }
+  input:focus, select:focus, textarea:focus{
+    outline:2px solid var(--accent);
+    outline-offset:1px;
+  }
+  textarea{resize:vertical; min-height:60px;}
+  .field-error{
+    color:var(--danger);
+    font-size:0.75rem;
+    margin-top:5px;
+    display:none;
+  }
+  .field-error.show{display:block;}
+
+  button.primary{
+    margin-top:22px;
+    width:100%;
+    background:var(--accent);
+    color:#1b1000;
+    border:none;
+    padding:12px 14px;
+    font-weight:600;
+    font-size:0.9rem;
+    border-radius:4px;
+    cursor:pointer;
+    font-family:'Space Grotesk', sans-serif;
+  }
+  button.primary:hover{background:#ef7038;}
+
+  .form-msg{
+    margin-top:12px;
+    font-size:0.82rem;
+    padding:9px 11px;
+    border-radius:4px;
+    display:none;
+  }
+  .form-msg.show{display:block;}
+  .form-msg.error{background:rgba(214,69,69,0.12); color:#ff8f8f; border:1px solid rgba(214,69,69,0.3);}
+  .form-msg.ok{background:rgba(76,175,125,0.12); color:#8fe0b6; border:1px solid rgba(76,175,125,0.3);}
+
+  .list-panel{
+    padding:28px 32px;
+  }
+  .list-panel h2{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:1rem;
+    margin:0 0 16px;
+    color:var(--muted);
+    font-weight:500;
+  }
+  table{
+    width:100%;
+    border-collapse:collapse;
+  }
+  th{
+    text-align:left;
+    font-size:0.72rem;
+    text-transform:uppercase;
+    letter-spacing:0.04em;
+    color:var(--muted);
+    padding:0 12px 10px;
+    border-bottom:1px solid var(--border);
+    font-weight:500;
+  }
+  td{
+    padding:12px;
+    border-bottom:1px solid var(--border);
+    font-size:0.87rem;
+    vertical-align:middle;
+  }
+  tr:hover td{background:rgba(255,255,255,0.02);}
+  .plate{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:600;
+    letter-spacing:0.03em;
+  }
+  .badge{
+    display:inline-block;
+    padding:3px 9px;
+    border-radius:99px;
+    font-size:0.72rem;
+    font-weight:600;
+  }
+  .badge.ok{background:rgba(76,175,125,0.15); color:var(--success);}
+  .badge.warn{background:rgba(226,179,42,0.15); color:var(--warning);}
+  .badge.urgent{background:rgba(214,69,69,0.15); color:var(--danger);}
+  .row-actions button{
+    background:none;
+    border:1px solid var(--border);
+    color:var(--muted);
+    padding:5px 10px;
+    border-radius:4px;
+    font-size:0.75rem;
+    cursor:pointer;
+    margin-right:6px;
+  }
+  .row-actions button:hover{border-color:var(--accent); color:var(--accent);}
+  .empty{
+    color:var(--muted);
+    font-size:0.9rem;
+    padding:30px 0;
+    text-align:center;
+  }
+  .km-diff{
+    color:var(--muted);
+    font-size:0.78rem;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Bitácora de Mantenimiento Vehicular</h1>
+    <p>Registra el kilometraje de tu flota y controla cuándo corresponde el próximo servicio.</p>
+  </div>
+  <div class="dash">
+    <div class="dash-item">
+      <div class="num" id="statTotal">0</div>
+      <div class="lbl">Vehículos</div>
+    </div>
+    <div class="dash-item urgent">
+      <div class="num" id="statUrgent">0</div>
+      <div class="lbl">Alerta urgente</div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="form-panel">
+    <h2 id="formTitle">Nuevo registro</h2>
+    <form id="maintForm">
+      <input type="hidden" id="editId" value="">
+
+      <label for="placa">Placa del vehículo</label>
+      <input type="text" id="placa" placeholder="ABC123">
+
+      <label for="kmActual">Kilometraje actual</label>
+      <input type="number" id="kmActual" placeholder="45000">
+
+      <label for="kmProximo">Kilometraje próximo mantenimiento</label>
+      <input type="number" id="kmProximo" placeholder="50000">
+      <div class="field-error" id="errKm">El kilometraje próximo debe ser mayor al actual.</div>
+
+      <label for="categoria">Categoría del servicio</label>
+      <select id="categoria">
+        <option value="">Seleccione una categoría</option>
+        <option value="aceite">Cambio de aceite</option>
+        <option value="frenos">Frenos</option>
+        <option value="llantas">Llantas</option>
+        <option value="filtros">Filtros</option>
+        <option value="otro">Otro</option>
+      </select>
+      <div class="field-error" id="errCat">Debe seleccionar una categoría de servicio.</div>
+
+      <label for="fecha">Fecha del registro</label>
+      <input type="date" id="fecha">
+
+      <label for="notas">Notas (opcional)</label>
+      <textarea id="notas" placeholder="Observaciones del servicio..."></textarea>
+
+      <div class="form-msg" id="formMsg"></div>
+      <button type="submit" class="primary" id="submitBtn">Guardar registro</button>
+    </form>
+  </section>
+
+  <section class="list-panel">
+    <h2>Vehículos registrados</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Placa</th>
+          <th>Km actual</th>
+          <th>Próximo servicio</th>
+          <th>Categoría</th>
+          <th>Estado</th>
+          <th>Fecha</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+    <div class="empty" id="emptyMsg" style="display:none;">Aún no hay vehículos registrados.</div>
+  </section>
+</main>
+
+<script src="logic.js"></script>
+<script>
+  const STORAGE_KEY = 'flota_mantenimiento_v1';
+  const categoriaLabels = {
+    aceite: 'Cambio de aceite',
+    frenos: 'Frenos',
+    llantas: 'Llantas',
+    filtros: 'Filtros',
+    otro: 'Otro'
+  };
+
+  function loadRecords(){
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return [];
+    return JSON.parse(raw);
+  }
+
+  function persist(records){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+  }
+
+  let records = loadRecords();
+
+  const form = document.getElementById('maintForm');
+  const placaInput = document.getElementById('placa');
+  const kmActualInput = document.getElementById('kmActual');
+  const kmProximoInput = document.getElementById('kmProximo');
+  const categoriaInput = document.getElementById('categoria');
+  const fechaInput = document.getElementById('fecha');
+  const notasInput = document.getElementById('notas');
+  const editIdInput = document.getElementById('editId');
+  const formMsg = document.getElementById('formMsg');
+  const errKm = document.getElementById('errKm');
+  const errCat = document.getElementById('errCat');
+  const submitBtn = document.getElementById('submitBtn');
+  const formTitle = document.getElementById('formTitle');
+
+  const { estadoDe, kmRestante, esKmValido, contarUrgentes, validarRegistro, parseKm } = MaintenanceLogic;
+
+  function estadoLabel(estado){
+    if(estado === 'urgent') return 'Alerta urgente';
+    if(estado === 'warn') return 'Próximo';
+    return 'Al día';
+  }
+
+  function showMsg(text, type){
+    formMsg.textContent = text;
+    formMsg.className = 'form-msg show ' + type;
+  }
+
+  function clearMsg(){
+    formMsg.className = 'form-msg';
+  }
+
+  function resetForm(){
+    form.reset();
+    editIdInput.value = '';
+    formTitle.textContent = 'Nuevo registro';
+    submitBtn.textContent = 'Guardar registro';
+    clearMsg();
+    errKm.classList.remove('show');
+    errCat.classList.remove('show');
+  }
+
+  function render(){
+    const tbody = document.getElementById('tableBody');
+    const emptyMsg = document.getElementById('emptyMsg');
+    tbody.innerHTML = '';
+
+    if(records.length === 0){
+      emptyMsg.style.display = 'block';
+    } else {
+      emptyMsg.style.display = 'none';
+    }
+
+    let urgentCount = 0;
+
+    records.forEach(r => {
+      const estado = estadoDe(r.kmActual, r.kmProximo);
+      if(estado === 'urgent') urgentCount++;
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td class="plate">${r.placa}</td>
+        <td>${r.kmActual.toLocaleString()} km</td>
+        <td>${r.kmProximo.toLocaleString()} km <div class="km-diff">${kmRestante(r.kmActual, r.kmProximo)} km restantes</div></td>
+        <td>${categoriaLabels[r.categoria] || r.categoria}</td>
+        <td><span class="badge ${estado}">${estadoLabel(estado)}</span></td>
+        <td>${r.fecha || '—'}</td>
+        <td class="row-actions">
+          <button data-action="edit" data-id="${r.id}">Editar</button>
+          <button data-action="delete" data-id="${r.id}">Eliminar</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    document.getElementById('statTotal').textContent = records.length;
+    document.getElementById('statUrgent').textContent = contarUrgentes(records);
+  }
+
+  function validate(){
+    const kmActual = parseKm(kmActualInput.value);
+    const kmProximo = parseKm(kmProximoInput.value);
+    const isEditing = !!editIdInput.value;
+
+    const result = validarRegistro(
+      { kmActual, kmProximo, categoria: categoriaInput.value },
+      isEditing
+    );
+
+    errKm.classList.toggle('show', !!result.errors.km);
+    errCat.classList.toggle('show', !!result.errors.categoria);
+
+    return result.valid;
+  }
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    clearMsg();
+
+    if(!validate()){
+      showMsg('Revisa los campos marcados antes de guardar.', 'error');
+      return;
+    }
+
+    const record = {
+      id: editIdInput.value || Date.now().toString(),
+      placa: placaInput.value.trim().toUpperCase(),
+      kmActual: parseKm(kmActualInput.value),
+      kmProximo: parseKm(kmProximoInput.value),
+      categoria: categoriaInput.value,
+      fecha: fechaInput.value,
+      notas: notasInput.value.trim()
+    };
+
+    if(editIdInput.value){
+      const idx = records.findIndex(r => r.id === editIdInput.value);
+      records[idx] = record;
+      showMsg('Registro actualizado correctamente.', 'ok');
+    } else {
+      records.push(record);
+      showMsg('Registro guardado correctamente.', 'ok');
+    }
+
+    persist(records);
+    render();
+    resetForm();
+  });
+
+  document.getElementById('tableBody').addEventListener('click', function(e){
+    const btn = e.target.closest('button');
+    if(!btn) return;
+    const id = btn.dataset.id;
+    const action = btn.dataset.action;
+
+    if(action === 'edit'){
+      const r = records.find(r => r.id === id);
+      if(!r) return;
+      editIdInput.value = r.id;
+      placaInput.value = r.placa;
+      kmActualInput.value = r.kmActual;
+      kmProximoInput.value = r.kmProximo;
+      categoriaInput.value = r.categoria;
+      fechaInput.value = r.fecha;
+      notasInput.value = r.notas;
+      formTitle.textContent = 'Editar registro';
+      submitBtn.textContent = 'Actualizar registro';
+      window.scrollTo({top:0, behavior:'smooth'});
+    }
+
+    if(action === 'delete'){
+      records = records.filter(r => r.id !== id);
+      render();
+    }
+  });
+
+  render();
+</script>
+
+</body>
+</html>

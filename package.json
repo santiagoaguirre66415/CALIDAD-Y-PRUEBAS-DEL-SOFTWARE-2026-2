@@ -1,0 +1,12 @@
+{
+  "name": "bitacora-mantenimiento-vehicular",
+  "version": "1.0.0",
+  "description": "Registro y control de mantenimiento de vehículos - Entrega 1 Calidad y Pruebas de Software",
+  "main": "src/logic.js",
+  "scripts": {
+    "test": "jest --colors --verbose"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}

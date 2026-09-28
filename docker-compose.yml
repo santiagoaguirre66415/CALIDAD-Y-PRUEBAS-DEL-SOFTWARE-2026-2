@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  # Servicio para análisis estático de código
+  sonarqube:
+    image: sonarqube:community
+    ports:
+      - "9000:9000"
+    environment:
+      - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
+    volumes:
+      - sonarqube_data:/opt/sonarqube/data
+      - sonarqube_extensions:/opt/sonarqube/extensions
+      - sonarqube_logs:/opt/sonarqube/logs
+      - .:/usr/src
+
+  # Servicio para correr la suite de pruebas unitarias automatizadas
+  unit-tests:
+    build: .
+    command: npm test
+    volumes:
+      - .:/app
+      - /app/node_modules
+
+volumes:
+  sonarqube_data:
+  sonarqube_extensions:
+  sonarqube_logs:

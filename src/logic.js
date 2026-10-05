@@ -23,7 +23,7 @@
 
   // Clasifica el estado del vehículo según los km restantes.
   function estadoDe(kmActual, kmProximo) {
-    var diff = kmRestante(kmActual, kmProximo);
+    const diff = kmRestante(kmActual, kmProximo);
     if (diff <= 500) return 'urgent';
     if (diff <= 1500) return 'warn';
     return 'ok';
@@ -43,7 +43,7 @@
 
   // Valida un registro antes de guardarlo.
   function validarRegistro(record, isEditing) {
-    var errors = {};
+    const errors = {};
 
     if (!esKmValido(record.kmActual, record.kmProximo)) {
       errors.km = 'El kilometraje próximo debe ser mayor al actual.';

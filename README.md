@@ -44,7 +44,7 @@ docker-compose up -d sonarqube
 ```
 
 Luego escanear el código con el SonarScanner CLI (o el plugin de tu IDE), apuntando a
-`sonar-project.properties`, y capturar el pantallazo del Quality Gate para el informe.
+`sonar-project.properties`, para obtener el resultado del Quality Gate.
 
 ## Reglas de negocio implementadas
 
